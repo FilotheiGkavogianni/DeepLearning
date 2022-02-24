@@ -66,7 +66,7 @@ class Trainer:
         print('confusion matrix: ')
         # cm = confusion_matrix(self.y_test,predictions, labels=list(range(10)))
         target_names=["T-shirt/top","Trouser","Pullover","Dress","Coat","Sandal","Shirt","Sneaker","Bag","Ankle boot"]
-        ConfusionMatrixDisplay.from_predictions(self.y_test,predictions, display_labels=target_names, xticks_rotation='vertical')
+        ConfusionMatrixDisplay.from_predictions(self.y_test,predictions, display_labels=target_names, xticks_rotation='vertical', cmap = 'RdPu')
         plt.show()
 
     def plot_metrics(self):
