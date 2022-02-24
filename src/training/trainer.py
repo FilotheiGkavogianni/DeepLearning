@@ -1,7 +1,7 @@
 
 from src.preprocessing.build_dataset import DataBuilder
 from matplotlib import pyplot as plt
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import keras_tuner as kt
 import tensorflow as tf
 import numpy as np
@@ -64,7 +64,10 @@ class Trainer:
 
     def confusion_matrix(self, predictions):
         print('confusion matrix: ')
-        print(confusion_matrix(self.y_test,predictions, labels=list(range(10))))
+        # cm = confusion_matrix(self.y_test,predictions, labels=list(range(10)))
+        target_names=["T-shirt/top","Trouser","Pullover","Dress","Coat","Sandal","Shirt","Sneaker","Bag","Ankle boot"]
+        ConfusionMatrixDisplay.from_predictions(self.y_test,predictions, display_labels=target_names, xticks_rotation='vertical')
+        plt.show()
 
     def plot_metrics(self):
         print(self.history.history)
