@@ -7,18 +7,18 @@ import tensorflow as tf
 import numpy as np
 
 class Trainer:
-    def __init__(self):
+    def __init__(self, model_type):
         self.history = None
 
         db = DataBuilder()
-        self.X_train, self.y_train, self.X_val, self.y_val, self.X_test, self.y_test = db.get_data()
+        self.X_train, self.y_train, self.X_val, self.y_val, self.X_test, self.y_test = db.get_data(model_type)
 
 
     def train(self, model):
         self.history = model.fit(self.X_train,
                                 self.y_train,
-                                epochs = 10,
-                                batch_size = 256,
+                                epochs = 15,
+                                batch_size = 128,
                                 validation_data = (self.X_val, self.y_val))
                                
 
