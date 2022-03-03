@@ -7,20 +7,35 @@ from sklearn.model_selection import train_test_split
 
 class DataBuilder():
 
-    def get_data(self):
+    def get_data(self,model_type):
+        
         # load dataset
         (train_images, train_labels), (test_images, test_labels) = keras.datasets.fashion_mnist.load_data()
+        print(train_images[0].shape)
+        print('!')
         # split to get validation set
         train_images, val_images, train_labels, val_labels = train_test_split(train_images, train_labels, test_size=0.17)
 
-        self.train_images = train_images.reshape(train_images.shape[0], 28*28).astype('float32') / 255.0
+        if (model_type == "mlp"):
+            train_images_reshape = train_images.reshape(train_images.shape[0], 28*28)
+            val_images_reshape = val_images.reshape(val_images.shape[0], 28*28)
+            test_images_reshape = test_images.reshape(test_images.shape[0], 28*28)
+        elif (model_type == "cnn"):
+            train_images_reshape = train_images.reshape((train_images.shape[0], 28, 28, 1))
+            val_images_reshape = val_images.reshape((val_images.shape[0], 28, 28, 1))
+            test_images_reshape = test_images.reshape((test_images.shape[0], 28, 28, 1))
+        
+        
+        self.train_images = train_images_reshape.astype('float32') / 255.0
         self.train_labels = train_labels
 
-        self.val_images = val_images.reshape(val_images.shape[0], 28*28).astype('float32') / 255.0
+        self.val_images = val_images_reshape.astype('float32') / 255.0
         self.val_labels = val_labels
 
-        self.test_images = test_images.reshape(test_images.shape[0], 28*28).astype('float32') / 255.0
+        self.test_images = test_images_reshape.astype('float32') / 255.0
         self.test_labels = test_labels
+
+        
 
         print('Shape of X_train, y_train is {} {}'.format(self.train_images.shape, self.train_labels.shape))
         print('Shape of X_val, y_val is {} {}'.format(self.val_images.shape, self.val_labels.shape))

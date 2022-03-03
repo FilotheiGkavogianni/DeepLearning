@@ -6,102 +6,101 @@ from sklearn.model_selection import GridSearchCV
 import os
 import numpy as np
 from src.models.mlp import MLP
+from src.models.cnn import CNN
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import tensorflow as tf
+from tensorflow import keras
 import keras_tuner as kt
-import os
+import argparse
 
+def parse_arguments():
+    my_parser = argparse.ArgumentParser()
+    my_parser.add_argument('--model', type=str, required=True)
+    my_parser.add_argument('--task', type=str, required=True)
+    my_parser.add_argument('--tune', action='store_true') #,default=False ,type=bool, required=False)
+    
+    return my_parser.parse_args()
 
 def main(model_type, tune, task):
-
-    pixels = 28*28
-    num_categories = 10
-    if model_type == 'mlp':
-        model = MLP(pixels,num_categories)
-    elif model_type == 'cnn':
-        #model = CNN(pixels,num_categories)
-        pass
     
-    if tune == False:
-        model_object = model.build_model()
+    if task == "train" :
+        pixels = 28*28
+        num_categories = 10
 
-        trainer = Trainer()
+        if model_type == 'mlp':
+            model = MLP(pixels,num_categories)
 
-        trainer.train(model_object)
-
-
-    elif tune == True:
-        model_builder = model.model_builder
-
-        trainer = Trainer()
-
-        model_object = trainer.tune(model_builder)
+        elif model_type == 'cnn':
+            model = CNN(pixels,num_categories)
+            
         
-        trainer.train(model_object)
+        if tune == False:
+            model_object = model.baseline_model()
+
+            trainer = Trainer(model_type)
+
+            trainer.train(model_object)
+            
+            model_object.save('baseline_model_'+model_type+'.h5')
 
 
-    trainer.plot_metrics()
+        elif tune == True:
+            model_builder = model.model_builder
 
-    trainer.eval(model_object)
+            trainer = Trainer(model_type)
 
-    predictions = trainer.predict(model_object)
+            model_object = trainer.tune(model_builder, model_type)
+            model_object.save('best_model_'+model_type+'.h5')
 
-    trainer.confusion_matrix(predictions)
+            trainer.train(model_object)
 
-    trainer.class_report(predictions)
+        
+        trainer.plot_metrics()
+
+        trainer.eval(model_object)
+
+        predictions = trainer.predict(model_object)
+        
+        trainer.predict_at_random(predictions)
+        
+        trainer.confusion_matrix(predictions)
+
+        trainer.class_report(predictions)
     
-    # if model == 'mlp' and tune == False :
+    elif task == 'test':
+        if tune ==False:
+            trained_model = keras.models.load_model('baseline_model_'+model_type+'.h5')
+            
+        elif tune ==True:
+            trained_model = keras.models.load_model('best_model_'+model_type+'.h5')
+
+
+        tester = Trainer(model_type)
+        predictions = tester.predict(trained_model)
+        tester.confusion_matrix(predictions)
+        tester.class_report(predictions)
+
+                
         
-
-        
-        
-        
-
-    #     eval = mlp.evaluate(X_train,y_train)
-    #     print('Val loss is {}, Val accuracy is {}'.format(eval[0],eval[1]))
-
-    #     eval = mlp.evaluate(X_test,y_test)
-    #     print('Test loss is {}, Test accuracy is {}'.format(eval[0],eval[1]))
-    #     predictions = mlp.predict(X_test)
-    #     for i in range(20):
-    #         print(np.argmax(predictions[i]),y_test[i])
-
-    #     y_pred =  np.argmax(predictions, axis=-1)
-
-        
-    #     # db.plot_image(0)
-
-    # elif model == 'mlp' and tune == True :
-    #     print('here')
-    #     mlp = MLP(pixels,num_categories).model_builder
-
-    #     tuner = kt.Hyperband(mlp, # the hypermodel
-    #                         objective='val_accuracy', # objective to optimize
-    #                         max_epochs=10,
-    #                         factor=3, # factor which you have seen above 
-    #                         directory='dir', # directory to save logs 
-    #                         project_name='khyperband')
-        
-    #     print(tuner.search_space_summary() )
-
-    #     stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
-    #     # Perform hypertuning
-    #     tuner.search(X_train, y_train, epochs=10, validation_split=0.2, callbacks=[stop_early])
-
-    #     best_hps = tuner.get_best_hyperparameters()[0]
-    #     print(f"""
-    #     The hyperparameter search is complete. The optimal number of units in the first densely-connected
-    #     layer is {best_hps.get('units')} and the optimal learning rate for the optimizer
-    #     is {best_hps.get('learning_rate')}.
-    #     """)
-
-    #     h_model = tuner.hypermodel.build(best_hps)
-    #     print(h_model.summary())
-
-
 
 if __name__ == "__main__":
-    main('mlp',True, 'train')
+    arguments = parse_arguments()
+    print(arguments)
+    main(arguments.model, arguments.tune, arguments.task)
 
-#
+
+# python main.py --model "mlp" --task "train"
+# python main.py --model "mlp" --tune --task "train"
+# python main.py --model "mlp" --task "test"
+# python main.py --model "mlp" --tune --task "test"
+
+# python main.py --model "cnn" --task "train"
+# python main.py --model "cnn" --tune --task "train"
+# python main.py --model "cnn" --task "test"
+# python main.py --model "cnn" --tune --task "test"
+
+
 #https://machinelearningmastery.com/how-to-develop-a-cnn-from-scratch-for-fashion-mnist-clothing-classification/
+
+
+#keras.models.load_mode()

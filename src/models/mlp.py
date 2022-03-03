@@ -9,25 +9,23 @@ class MLP():
         self.num_categories = num_categories
         #self.model = self.build_model(in_shape,num_categories)
         
-    def build_model(self):
+    def baseline_model(self):
         # create model
         self.model = Sequential()
-        self.model.add(Dense(256, input_dim=self.in_shape, activation='relu'))
-        self.model.add(Dropout(0.20))
+        self.model.add(Dense(128, input_dim=self.in_shape, activation='relu'))
+        self.model.add(Dropout(0.10))
         # self.model.add(Dense(512, activation='relu'))
         # self.model.add(Dropout(0.20))
         self.model.add(Dense(self.num_categories, activation='softmax'))
 
         self.model.compile(
             loss='sparse_categorical_crossentropy',
-            optimizer=keras.optimizers.Adam(learning_rate=0.001),
+            optimizer=keras.optimizers.Adam(learning_rate=0.1),
             metrics=['accuracy'],
         )
 
         return self.model
 
-    def baseline_model(self):
-         pass
 
     def model_builder(self,hp):
         
