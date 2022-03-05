@@ -7,15 +7,12 @@ class MLP():
     def __init__(self, in_shape, num_categories):
         self.in_shape = in_shape
         self.num_categories = num_categories
-        #self.model = self.build_model(in_shape,num_categories)
         
     def baseline_model(self):
         # create model
         self.model = Sequential()
         self.model.add(Dense(128, input_dim=self.in_shape, activation='relu'))
         self.model.add(Dropout(0.10))
-        # self.model.add(Dense(512, activation='relu'))
-        # self.model.add(Dropout(0.20))
         self.model.add(Dense(self.num_categories, activation='softmax'))
 
         self.model.compile(

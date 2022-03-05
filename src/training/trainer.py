@@ -86,9 +86,6 @@ class Trainer:
         # show the figure
         plt.show()
 
-    def test(model):
-        
-        pass
 
     def eval(self,model):
         eval = model.evaluate(self.X_test,self.y_test)

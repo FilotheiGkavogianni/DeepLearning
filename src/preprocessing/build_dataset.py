@@ -11,8 +11,7 @@ class DataBuilder():
         
         # load dataset
         (train_images, train_labels), (test_images, test_labels) = keras.datasets.fashion_mnist.load_data()
-        print(train_images[0].shape)
-        print('!')
+        
         # split to get validation set
         train_images, val_images, train_labels, val_labels = train_test_split(train_images, train_labels, test_size=0.17)
 
