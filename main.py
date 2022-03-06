@@ -4,7 +4,9 @@ import os
 from src.models.mlp import MLP
 from src.models.cnn import CNN
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import tensorflow as tf
 from tensorflow import keras
+tf.random.set_seed(42)
 import argparse
 
 def parse_arguments():
@@ -50,6 +52,7 @@ def main(model_type, tune, task):
             model_object.save('best_model_'+model_type+'.h5')
         
         trainer.plot_metrics()
+        
 
         trainer.eval(model_object)
 
@@ -70,13 +73,14 @@ def main(model_type, tune, task):
 
 
         tester = Trainer(model_type)
+        tester.eval(trained_model)
         predictions = tester.predict(trained_model)
         tester.confusion_matrix(predictions)
         tester.class_report(predictions)
 
-                
-        
+
 
 if __name__ == "__main__":
     arguments = parse_arguments()
     main(arguments.model, arguments.tune, arguments.task)
+

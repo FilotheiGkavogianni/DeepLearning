@@ -36,9 +36,9 @@ class CNN():
         hp_units = hp.Int('units', min_value=2, max_value=32, step=4)
 
         model.add(Conv2D(hp_units, (3, 3), activation='relu', kernel_initializer='he_uniform', input_shape=(28, 28, 1)))
-
+        model.add(MaxPooling2D((2,2)))
         model.add(Flatten())
-        model.add(Dense(12, activation='relu', kernel_initializer='he_uniform'))
+        model.add(Dense(32, activation='relu', kernel_initializer='he_uniform'))
         model.add(Dense(self.num_categories, activation='softmax'))
         hp_learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
 

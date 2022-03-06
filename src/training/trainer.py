@@ -25,7 +25,7 @@ class Trainer:
                                
 
 
-    def tune(self,model, model_type):
+    def tune(self, model, model_type):
         if model_type == "mlp":
             save_dir = "mlp_dir"
         elif model_type == "cnn":

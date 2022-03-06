@@ -4,6 +4,10 @@ import tensorflow as tf
 from tensorflow import keras
 from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
+import numpy as np
+
+tf.random.set_seed(42)
+np.random.seed(0)
 
 class DataBuilder():
 
